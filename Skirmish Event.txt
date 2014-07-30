@@ -1,13 +1,15 @@
 //          SKIRMISH EVENT 
 // Script by Rythwin for SCYTHE RO (Made by Zairik)
-// Revision 1.0
-// Tested offline
+// Revision 2
+// Added the option of disabling the event during War of Emp.
 
 
 
 -	script	SkirmishControl	-1,{
 OnWhisperGlobal:
 		if ( getgmlevel() < 10 ) end;
+		else if ( agitcheck() == 1 || agitcheck2() == 1 )
+		end;
 		else;
 		mes "Hello GM "+strcharinfo(0)+"!";
 		mes "Welcome to the Skirmish Control NPC";
