@@ -1,0 +1,201 @@
+//          SKIRMISH EVENT 
+// Script by Rythwin for SCYTHE RO (Made by Zairik)
+// Revision 1.0
+// Tested offline
+
+
+
+-	script	SkirmishControl	-1,{
+OnWhisperGlobal:
+		if ( getgmlevel() < 10 ) end;
+		else;
+		mes "Hello GM "+strcharinfo(0)+"!";
+		mes "Welcome to the Skirmish Control NPC";
+		next;
+		switch(select("Start Skirmish:Close:Hard Reset (Admin Only!)"))
+	{
+		case 1:
+		{
+			if ($skirmish_status==1) || ($skirmish_status==2){
+			mes "Sorry GM, the event is already in progress";
+			close2;
+			end;
+			}
+			
+			else {
+			mes "The event will be started in 10 seconds!";
+			mes "Please wait while the event is being set up";
+			close2;
+			set $skirmish_status,1;
+			}
+			goto SK_init;
+			
+			SK_init:
+			{
+			sleep2 10000;
+			set $skirmish_event,1;
+			pvpoff "pvp_n_1-5";
+			announce "Skirmish Event: The Skirmish Event has been started by a Game Master!",0;
+			sleep2 5000;
+			announce "Skirmish Event: Talk to the Skirmish NPC @go 0 to enter!",0;
+			sleep2 5000;
+			announce "Skirmish Event: Registrations will be open for 5 minutes",0;
+			sleep2 300000;
+			announce "Skirmish Event: Registration for Skirmish event is now closed!",0;
+			set $skirmish_event,0;
+			set $skirmish_status,2;
+		
+			if(getmapusers("pvp_n_1-5") == 0) {
+				goto SK_None;
+				}
+				if(getmapusers("pvp_n_1-5") == 1) {
+				goto SK_Less;
+				}
+			else {
+			sleep2 1000;
+			mapannounce "pvp_n_1-5","Skirmish Event: The Skirmish Event is now going to start in 5 seconds",0;
+			sleep2 1000;
+			mapannounce "pvp_n_1-5","Skirmish Event:: 4",0;
+			sleep2 1000;
+			mapannounce "pvp_n_1-5","Skirmish Event:: 3",0;
+			sleep2 1000;
+			mapannounce "pvp_n_1-5","Skirmish Event:: 2",0;
+			sleep2 1000;
+			mapannounce "pvp_n_1-5","Skirmish Event:: 1",0;
+			sleep2 1000;
+			mapannounce "pvp_n_1-5","Skirmish Event:: Go Go Go! Fight!",0;
+			pvpon "pvp_n_1-5";
+			goto timer;
+			end;
+			}
+		
+			timer:
+			sleep2 1000;
+			if(getmapusers("pvp_n_1-5") == 1) goto SK_Winner;
+			if(getmapusers("pvp_n_1-5") > 1) goto timer;
+			end;
+		
+			OnPCLogoutEvent:
+			OnPCDieEvent:
+			getmapxy(.@map$,.@x,.@y,0);
+			if(.@map$=="pvp_n_1-5")
+			{
+			warp "scythero",100,100;
+			end;
+			}
+		
+						
+			SK_None:
+			announce "Skirmish Event: There was no one in the Skirmish Map! Event cancelled!",0;
+			callsub SK_reset;
+			end;
+		
+			SK_Less:
+			announce "Skirmish Event: There were not enough registrations for the Skirmish Event! Event cancelled!",0;
+			callsub SK_reset;
+			end;
+			
+			SK_Winner:
+			mapannounce "pvp_n_1-5","Congratulations! You have won. Talk to the NPC at the North of the map to claim your prize!",0;
+			sleep 5000;
+			mapannounce "pvp_n_1-5","You have 2 minutes to claim your prize!",0;
+			sleep 60000;
+			mapannounce "pvp_n_1-5","You have 1 minute to claim your prize! After which ou will be warped out",0;
+			sleep 60000;
+			mapwarp "pvp_n_1-5","scythero",100,100;
+			set $skirmish_status,0;
+			set $skirmish_event,0;
+			end;
+						
+			SK_reset:
+			set $skirmish_event,0;
+			set $skirmish_status,0;
+			pvpoff "pvp_n_1-5";
+			mapwarp "pvp_n_1-5","scythero",100,100;
+			return;
+			end;
+			}
+			}
+			case 2:
+			{
+			mes "As you wish";
+			end;	
+			}
+	
+// 	ADDED FOR DEBUG PURPOSES.
+
+			case 3:
+			if (getgmlevel () != 99){
+			mes "Sorry. This option is not available at your GM Level.";
+			close;
+			}
+			else {
+			mes "This will Reset the NPC and all the variables used by it";
+			mes "Make sure you do not do this while the event is running!";
+			next;
+			mes "Are you sure?!";
+			if (select ("Yes:No")==2){
+			close;
+			}
+			set $skirmish_event,0;
+			set $skirmish_status,0;
+			pvpoff "pvp_n_1-5";
+			end;
+	}
+}
+}
+	
+
+prontera,154,178,5	script	Skirmish Event	100,{
+		if ($skirmish_event==0){
+		Mes "Sorry. This event is not open right now";
+		end;
+		}
+		menu "Enter Skirmish Event",SK_YES,"Leave",SK_NO;
+		SK_NO:
+		close;
+		SK_YES:
+		warp "pvp_n_1-5",100,100;
+		end;
+		}
+		
+pvp_n_1-5,99,139,3	script	Skirmish Prize	864,{
+
+		if ($skirmish_event == 0 && $skirmish_status==0){
+		mes "What are you doing here? You should not be on this map!";
+		next;
+		warp "scythero",100,100;
+		end;
+		}
+		if(getmapusers("pvp_n_1-5") != 1 && $skirmish_status==2){
+			mes	"There are still people playing, you can't claim your prize yet!";
+			close;
+			}
+		else if ($skirmish_status == 1){
+			mes "The event has not yet started. Win the event and then talk to me to claim the prize.";
+			close;
+			}
+			else if ($skirmish_status == 2 && getmapusers("pvp_n_1-5") == 1){
+			mes	"Congratulations! You will now be warped out with your prize.";
+			next;
+			announce "Skirmish Event: We have a winner: "+strcharinfo(0)+"!",0;
+			getitem 909,1;
+			set $skirmish_status,0;
+			set $skirmish_event,0;
+			warp "scythero",100,100;
+			end;
+			}
+		}
+		
+		
+pvp_n_1-5	mapflag	nosave	SavePoint
+pvp_n_1-5	mapflag	nowarp
+pvp_n_1-5	mapflag	nowarpto
+pvp_n_1-5	mapflag	noteleport
+pvp_n_1-5	mapflag	nomemo
+pvp_n_1-5	mapflag	nopenalty
+pvp_n_1-5	mapflag	nobranch
+pvp_n_1-5	mapflag	noicewall
+pvp_n_1-5	mapflag	pvp_noparty
+pvp_n_1-5	mapflag	pvp_noguild
+pvp_n_1-5	mapflag	nogo
