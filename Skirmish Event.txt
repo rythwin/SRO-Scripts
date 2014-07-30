@@ -1,14 +1,14 @@
 //          SKIRMISH EVENT 
 // Script by Rythwin for SCYTHE RO (Made by Zairik)
-// Revision 2
+// Revision 3
 // Added the option of disabling the event during War of Emp.
-
-
+// Added the option in case it happens to be a draw
 
 -	script	SkirmishControl	-1,{
 OnWhisperGlobal:
-		if ( getgmlevel() < 10 ) end;
-		else if ( agitcheck() == 1 || agitcheck2() == 1 )
+		if ( getgmlevel() < 10 )
+		end;
+		else if ( agitcheck() == 1 || agitcheck2() == 1 ) 
 		end;
 		else;
 		mes "Hello GM "+strcharinfo(0)+"!";
@@ -75,16 +75,9 @@ OnWhisperGlobal:
 			sleep2 1000;
 			if(getmapusers("pvp_n_1-5") == 1) goto SK_Winner;
 			if(getmapusers("pvp_n_1-5") > 1) goto timer;
+			if(getmapusers("pvp_n_1-5") == 0) goto SK_Draw;
 			end;
 		
-			OnPCLogoutEvent:
-			OnPCDieEvent:
-			getmapxy(.@map$,.@x,.@y,0);
-			if(.@map$=="pvp_n_1-5")
-			{
-			warp "scythero",100,100;
-			end;
-			}
 		
 						
 			SK_None:
@@ -109,6 +102,11 @@ OnWhisperGlobal:
 			set $skirmish_event,0;
 			end;
 						
+			SK_Draw:
+			announce "Skirmish Event: Looks like the last two players killed each other! So no prize in this round!",0;
+			callsub SK_reset;
+			end;
+			
 			SK_reset:
 			set $skirmish_event,0;
 			set $skirmish_status,0;
@@ -144,7 +142,17 @@ OnWhisperGlobal:
 			pvpoff "pvp_n_1-5";
 			end;
 	}
+	
+			
 }
+OnPCLogoutEvent:
+			OnPCDieEvent:
+			getmapxy(.@map$,.@x,.@y,0);
+			if(.@map$=="pvp_n_1-5")
+			{
+			warp "scythero",100,100;
+			end;
+			}
 }
 	
 
