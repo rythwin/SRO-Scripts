@@ -1,12 +1,24 @@
-// --------------- ZOMBIE RUN EVENT ---------------- \\
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ \\
+// --------------------------------------------------------------------------------- ZOMBIE RUN EVENT --------------------------------------------------------------------------------- \\
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ \\
+// 									Novices run from zombies and last person standing wins the event.
+//
+//				 Change "909" in the Zombie Prize NPC to set whatever prize you want. The number following it, 1, is the number of prize items to be given
+//
+//								 started by a Game master (default level 10) Talking to the NPC and starting the event
+//
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ \\
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ \\
+//
 // Written by Rythwin for Scythe RO (Made by Zairik)
-// Revision 1
-// ------------------------------------------------- \\
-// Novices run from zombies and last person standing wins the event.
-// Change "909" in the Zombie Prize NPC to set whatever prize you want. The number following it, 1, is the number of prize items to be given
-// started by a Game master (default level 10) Talking to the NPC and starting the event
-// -------------------------------------------------- \\
-
+// Revision 2
+//
+// Notes:
+// Corrected the NPC check on eligibility. It was not looking for the correct values earlier.
+// Added SANDALS_ or Sandals [1] to the npc check, because this is the only item a level 1 novice can wear. They have to get rid of the item to participate. (Item ID: 2402)
+// Added a 1 second delay between the NPC announcing additional zombies and the zombies actually spawning.
+// Added even GMs below level 90 being warned that warping to the map can cause the event to get imbalanced, even in @hide.
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \\
 
 -	script	ZRCONTROLLEVEL	-1,{
 OnInit:
@@ -23,31 +35,29 @@ end;
 // Zombie Run - Control / Warper Hub
 
 prontera,155,178,5	script	Zombie Run	100,{
-
-		if (getgmlevel() >= $zgmlevel)
-		{
-		mes "^2099FF[~Zombie Run Control Node~]^000000";
-		mes "Hello GM "+strcharinfo(0)+"!";
-		mes "What would you like to do today?";
-		next;
+		if (getgmlevel() >= $zgmlevel){
+			mes "^2099FF[~Zombie Run Control Node~]^000000";
+			mes "Hello GM "+strcharinfo(0)+"!";
+			mes "What would you like to do today?";
+			next;
 			switch(select("Start Zombie Run:Close Registrations and Start:Cancel")){
 			
 		case 1:
 		{
 			if ($zombierun_onoff == 1) || ($zombierun_status == 1){
-			mes "^2099FF[~Zombie Run Control Node~]^000000";
-			mes "I'm sorry, the event is already running!";
-			close2;
-			end;
-			}
+				mes "^2099FF[~Zombie Run Control Node~]^000000";
+				mes "I'm sorry, the event is already running!";
+				close2;
+				end;
+				}
 			else {
-			mes "^2099FF[~Zombie Run Control Node~]^000000";
-			mes "Very well, I shall start the Event now!";
-			close2;
-			set $zombierun_onoff,1;
-			goto ZR_AnnounceOpen;
-			end;
-			}
+				mes "^2099FF[~Zombie Run Control Node~]^000000";
+				mes "Very well, I shall start the Event now!";
+				close2;
+				set $zombierun_onoff,1;
+				goto ZR_AnnounceOpen;
+				end;
+				}
 		}
 		case 2:
 		{
@@ -58,9 +68,9 @@ prontera,155,178,5	script	Zombie Run	100,{
 			end;
 			}
 			else if ($zombierun_onoff == 1){
-			mes "^2099FF[~Zombie Run Control Node~]^000000";
-			mes "There are "+getmapusers("pvp_n_2-5")+" users on the map right now!";
-			next;
+				mes "^2099FF[~Zombie Run Control Node~]^000000";
+				mes "There are "+getmapusers("pvp_n_2-5")+" users on the map right now!";
+				next;
 			mes "^2099FF[~Zombie Run Control Node~]^000000";
 			mes "Are you sure you want to close registrations and Start the event?";
 			next;
@@ -75,7 +85,14 @@ prontera,155,178,5	script	Zombie Run	100,{
 
 				else if (getgmlevel () < 90){
 				mes "^2099FF[~Zombie Run Control Node~]^000000";
+				mes "NOTE THAT IF YOU WARP OR GO TO THE EVENT YOURSELF, YOU WILL BE COUNTED AS A PERSON IN THE MAP";
+				next;
+				mes "^2099FF[~Zombie Run Control Node~]^000000";
+				mes "EVEN USING @HIDE IN THE EVENT MAP WILL COUNT YOU AND THE EVENT WILL BE DISRUPTED! PLEASE KEEP THAT IN MIND!";
+				next;
+				mes "^2099FF[~Zombie Run Control Node~]^000000";
 				mes "The event will be started now";
+				close2;
 				goto ZR_AnnounceClose;
 				end;
 				}
@@ -84,6 +101,7 @@ prontera,155,178,5	script	Zombie Run	100,{
 				mes "^2099FF[~Zombie Run Control Node~]^000000";
 				mes "Would you like to be warped to the map as well?";
 				mes "Please note that your presence there even in @hide will still count as a person in the map";
+				next;
 					if(select("Yes:No")==2){
 					mes "^2099FF[~Zombie Run Control Node~]^000000";
 					mes "Okay";
@@ -92,7 +110,7 @@ prontera,155,178,5	script	Zombie Run	100,{
 					}
 					else {
 						mes "^2099FF[~Zombie Run Control Node~]^000000";
-						mes "Shall be warped now";
+						mes "You shall be warped now";
 						close2;
 						warp "pvp_n_2-5",100,100;
 						goto ZR_AnnounceClose;
@@ -115,178 +133,175 @@ prontera,155,178,5	script	Zombie Run	100,{
 	else if (getgmlevel() < $zgmlevel) {
 		
 		if ($zombierun_onoff == 0 && $zombierun_status == 0){
-		mes "^2099FF[~Zombie Run Event~]^000000";
-		mes "I'm sorry. The event is not running right now";
-		next;
-		mes "^2099FF[~Zombie Run Event~]^000000";
-		mes "If there are enough of you who want to play the game, please find an online Game Master to start the game for you!";
-		close;
-		end;
-		}
-		else if($zombierun_status == 1){
-		mes "^2099FF[~Zombie Run Event~]^000000";
-		mes "The Event is happening right now! Try again next time";
-		close;
-		end;
-		}
-		else if($zombierun_onoff == 1){
-		mes "^2099FF[~Zombie Run Event~]^000000";
-		mes "Registrations are open for the Zombie Run Event!";
-		next;
-		mes "^2099FF[~Zombie Run Event~]^000000";
-		mes "What would you like to do?";
-		next;
-			switch(select("Register and Enter:Leave")){
-			
-			case 1:
-			
-			goto ZR_EligibilityCheck;
-					
-			case 2:
-			
 			mes "^2099FF[~Zombie Run Event~]^000000";
-			mes "Okay!";
+			mes "I'm sorry. The event is not running right now";
+			next;
+			mes "^2099FF[~Zombie Run Event~]^000000";
+			mes "If there are enough of you who want to play the game, please find an online Game Master to start the game for you!";
 			close;
 			end;
-			
-			}
-		
 		}
+		else if($zombierun_status == 1){
+			mes "^2099FF[~Zombie Run Event~]^000000";
+			mes "The Event is happening right now! Try again next time";
+			close;
+			end;
+		}
+		else if($zombierun_onoff == 1){
+			mes "^2099FF[~Zombie Run Event~]^000000";
+			mes "Registrations are open for the Zombie Run Event!";
+			next;
+			mes "^2099FF[~Zombie Run Event~]^000000";
+			mes "What would you like to do?";
+			next;
+				switch(select("Register and Enter:Leave")){
+				
+				case 1:			
+				goto ZR_EligibilityCheck;
+					
+				case 2:			
+				mes "^2099FF[~Zombie Run Event~]^000000";
+				mes "Okay!";
+				close;
+				end;			
+				}		
+			}
 		}
 		
 		ZR_EligibilityCheck:
 			
-			if (BaseLevel != 1 || bStr > 20 || bAgi > 20 || bLuk > 20 || bDex > 20 || bInt > 20 || bVit > 20 || StatusPoints > 50 || class > 0){
-			mes "^3399FF[~Zombie Run Event~]^000000";
-			mes "I'm sorry. You need to be a FRESH NOVICE to play this event";
-			next;
-			mes "^3399FF[~Zombie Run Event~]^000000";
-			mes "That means  you have to be created with no status points increased through leveling";
-			close;
-			}
+			if ((getequipid(EQI_SHOES) == 2402) || (countitem(2402) > 0) ) goto ZR_Shoes;
+			if (BaseLevel != 1 || JobLevel > 1 || readparam(bStr) > 20 || readparam(bAgi) > 20 || readparam(bLuk) > 20 || readparam(bDex) > 20 || readparam(bInt) > 20 || readparam(bVit) > 20 || readparam(StatusPoint) > 55 || class > 0){
+				mes "^3399FF[~Zombie Run Event~]^000000";
+				mes "I'm sorry. You need to be a FRESH NOVICE to play this event";
+				next;
+				mes "^3399FF[~Zombie Run Event~]^000000";
+				mes "That means  you have to be created with no status points increased through leveling";
+				close;
+				end;
+				}
 			else {
+				mes "^3399FF[~Zombie Run Event~]^000000";
+				mes "I'll warp you to the map now!";
+				close2;
+				nude;
+				sc_end sc_all;
+				warp "pvp_n_2-5",100,100;
+				end;
+				}
+			
+		ZR_Shoes:
+		
 			mes "^3399FF[~Zombie Run Event~]^000000";
-			mes "I'll warp you to the map now!";
-			next;
-			close2;
-			sc_end sc_all;
-			warp "pvp_n_2-5",100,100;
+			mes "Oops! It looks like you have a pair of slotted sandals on you. Please put them in storage before you proceed!";
+			close;
 			end;
-			}
 			
 		ZR_AnnounceOpen:
 		
-		set $zombierun_onoff,1;
-		killmonsterall "pvp_n_2-5";
-		announce "Zombie Run Event: A Game Master has started the Zombie Run event!",0;
-		sleep2 5000;
-		announce "Zombie Run Event: To play, @go 0 and talk to the NPC",0;
-		sleep2 5000;
-		announce "Zombie Run Event: Please remember that you need a 'Fresh Novice' to play this event. A Novice character that has not been leveled at all.",0;
-		end;
+			set $zombierun_onoff,1;
+			killmonsterall "pvp_n_2-5";
+			announce "Zombie Run Event: A Game Master has started the Zombie Run event!",0;
+			sleep2 5000;
+			announce "Zombie Run Event: To play, @go 0 and talk to the NPC",0;
+			sleep2 5000;
+			announce "Zombie Run Event: Please remember that you need a 'Fresh Novice' to play this event. A Novice character that has not been leveled at all.",0;
+			end;
 		
 		ZR_AnnounceClose:
 		
-		announce "Zombie Run: Regsitrations for Zombie Run has been closed by a GM and the Event will being Shortly!",0;
-		set $zombierun_status,1;
-		set $zombierun_onoff,0;
-		goto ZR_Init;
-		end;
-		
-		
-		ZR_Init:
-		sleep2 2000;
-		mapannounce "pvp_n_2-5","Zombie Run Event: Hello players! Welcome to Zombie Run!",0;
-		sleep2 5000;
-		mapannounce "pvp_n_2-5","Zombie Run Event: I will first explain the rules:",0;
-		sleep2 2500;
-		mapannounce "pvp_n_2-5","Zombie Run Event: You must be the last Novice standing in this map once the zombies start appearing.",0;
-		sleep2 5000;
-		mapannounce "pvp_n_2-5","Zombie Run Event: I will spawn zombies every minute or so till there is only 1 person standing!",0;
-		sleep2 5000;
-		
+			announce "Zombie Run: Regsitrations for Zombie Run has been closed by a GM and the Event will being Shortly!",0;
+			set $zombierun_status,1;
+			set $zombierun_onoff,0;
+			goto ZR_Init;
+			end;
+				
+			ZR_Init:
+			sleep2 2000;
+			mapannounce "pvp_n_2-5","Zombie Run Event: Hello players! Welcome to Zombie Run!",0;
+			sleep2 5000;
+			mapannounce "pvp_n_2-5","Zombie Run Event: I will first explain the rules:",0;
+			sleep2 2500;
+			mapannounce "pvp_n_2-5","Zombie Run Event: You must be the last Novice standing in this map once the zombies start appearing.",0;
+			sleep2 5000;
+			mapannounce "pvp_n_2-5","Zombie Run Event: I will spawn zombies every minute or so till there is only 1 person standing!",0;
+			sleep2 5000;		
 // 	For some reason I cant get this to work~
 // 	I've been too lazy to figure out the correct commands.
 //  I've set the npc to debuff on entry. But the below option is for when someone gets buffs inside, somehow.
-
-//		mapannounce "pvp_n_2-5","Zombie Run Event: I will now remove all buffs on the players in here",0;
-//		sleep2 1000;
-//		atcommand "@doommap",pvp_n_2-5;
-//		atcommand "@raisemap",pvp_n_2-5;
-//		sleep2 5000;
-		mapannounce "pvp_n_2-5","Zombie Run Event: Good Luck! The zombies will spawn in 6 seconds",0;
-		sleep2 1000;
-		mapannounce "pvp_n_2-5","Zombie Run Event: 5",0;
-		sleep2 1000;
-		mapannounce "pvp_n_2-5","Zombie Run Event: 4",0;
-		sleep2 1000;
-		mapannounce "pvp_n_2-5","Zombie Run Event: 3",0;
-		sleep2 1000;
-		mapannounce "pvp_n_2-5","Zombie Run Event: 2",0;
-		sleep2 1000;
-		mapannounce "pvp_n_2-5","Zombie Run Event: 1",0;
-		sleep2 1000;
-		mapannounce "pvp_n_2-5","Zombie Run Event: Go go go! Run for your survival!",0;
-		monster "pvp_n_2-5",0,0,"Novice Killer",1036,10,"";
-		set $zrtime,0;
-		enablenpc "Zombie_Spawner";
-		goto ZR_timer;
-		end;
+//			mapannounce "pvp_n_2-5","Zombie Run Event: I will now remove all buffs on the players in here",0;
+//			sleep2 1000;
+//			atcommand "@doommap",pvp_n_2-5;
+//			atcommand "@raisemap",pvp_n_2-5;
+//			sleep2 5000;
+			mapannounce "pvp_n_2-5","Zombie Run Event: Good Luck! The zombies will spawn in 6 seconds",0;
+			sleep2 1000;
+			mapannounce "pvp_n_2-5","Zombie Run Event: 5",0;
+			sleep2 1000;
+			mapannounce "pvp_n_2-5","Zombie Run Event: 4",0;
+			sleep2 1000;
+			mapannounce "pvp_n_2-5","Zombie Run Event: 3",0;
+			sleep2 1000;
+			mapannounce "pvp_n_2-5","Zombie Run Event: 2",0;
+			sleep2 1000;
+			mapannounce "pvp_n_2-5","Zombie Run Event: 1",0;
+			sleep2 1000;
+			mapannounce "pvp_n_2-5","Zombie Run Event: Go go go! Run for your survival!",0;
+			monster "pvp_n_2-5",0,0,"Novice Killer",1036,10,"";
+			set $zrtime,0;
+			enablenpc "Zombie_Spawner";
+			goto ZR_timer;
+			end;
 		
 		ZR_timer:
 		
-		
-		sleep2 1000;
-		set $zrtime,$zrtime+1;
+			sleep2 1000;
+			set $zrtime,$zrtime+1;
 //	This value -- $zrtime -- is what decides how often the ghouls spawn. This is based on on how often the npc runs sleep2. In this scenario
 // 	The npc runs it every 1 second. So at the 59th instance, which is the 60th second, the monsters will spawn
 //	To change it to your preferred spawn rate, change it to (sleep2 time)-1 seconds. *Only if sleep2 is set to at least 1 second.
-		if ($zrtime == 59){		
-		monster "pvp_n_2-5",0,0,"Novice Killer",1036,10,"";
-		mapannounce "pvp_n_2-5","Zombie Spawner: Here are more Zombies! Die!",0;
-		set $zrtime,0;
-		}
-		if(getmapusers("pvp_n_2-5") == 1) goto ZR_Winner;
-		if(getmapusers("pvp_n_2-5") > 1) goto ZR_timer;
-		if(getmapusers("pvp_n_2-5") == 0) goto ZR_Nowinner;
-		end;
-		
-		
+			if ($zrtime == 59){		
+				mapannounce "pvp_n_2-5","Zombie Spawner: Here are more Zombies! Die!",0;
+				sleep2 1000;
+				monster "pvp_n_2-5",0,0,"Novice Killer",1036,10,"";
+				set $zrtime,0;
+				}
+			if(getmapusers("pvp_n_2-5") == 1) goto ZR_Winner;
+			if(getmapusers("pvp_n_2-5") > 1) goto ZR_timer;
+			if(getmapusers("pvp_n_2-5") == 0) goto ZR_Nowinner;
+			end;
+				
 		ZR_Winner:
-		mapannounce "pvp_n_2-5","Zombie Run Event: Congratulations! You have won the event!",0;
-		disablenpc "Zombie_Spawner";
-		killmonsterall "pvp_n_2-5";
-		sleep2 2000;
-		mapannounce "pvp_n_2-5","Please talk to the Prize NPC in the middle of the room for your reward!",0;
-		enablenpc "Zombie Prize";
-
-		end;
+		
+			mapannounce "pvp_n_2-5","Zombie Run Event: Congratulations! You have won the event!",0;
+			disablenpc "Zombie_Spawner";
+			killmonsterall "pvp_n_2-5";
+			sleep2 2000;
+			mapannounce "pvp_n_2-5","Please talk to the Prize NPC in the middle of the room for your reward!",0;
+			enablenpc "Zombie Prize";
+			end;
 		
 		ZR_Nowinner:
-		announce "Zombie Run Event: Looks like no one survived the Zombie onslaught!",0;
-		sleep2 5000;
-		announce "Zombie Run Event: Better luck next time to all the participants",0;
-		set $zombierun_status,0;
-		killmonsterall "pvp_n_2-5";
-		set $zrtime,0;
-		disablenpc "Zombie_Spawner";
-		end;
 		
-		
+			announce "Zombie Run Event: Looks like no one survived the Zombie onslaught!",0;
+			sleep2 5000;
+			announce "Zombie Run Event: Better luck next time to all the participants",0;
+			set $zombierun_status,0;
+			killmonsterall "pvp_n_2-5";
+			set $zrtime,0;
+			disablenpc "Zombie_Spawner";
+			end;
+				
 	OnPCLogoutEvent:
 	OnPCDieEvent:
 			getmapxy(.@map$,.@x,.@y,0);
-			if(.@map$=="pvp_n_2-5")
-			{
+			if(.@map$=="pvp_n_2-5"){
 			warp "scythero",100,100;
 			end;
 			}
-
 }
 
-
 // This NPC will get enabled when there is only 1 user on the map
-
 
 pvp_n_2-5,100,100,5	script	Zombie Prize	100,{
 	mes "Zombie Run Event: Hi there "+strcharinfo (0)+"!";
@@ -301,7 +316,6 @@ pvp_n_2-5,100,100,5	script	Zombie Prize	100,{
 	disablenpc "Zombie Prize";
 	end;
 }
-
 
 pvp_n_2-5	mapflag	nosave	SavePoint
 pvp_n_2-5	mapflag	nowarp
