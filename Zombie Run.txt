@@ -91,7 +91,8 @@ prontera,155,178,5	script	Zombie Run	100,{
 				else if (getgmlevel () < 90){
 				mes "^2099FF[~Zombie Run Control Node~]^000000";
 				mes "The event will be started now";
-				goto ZR_AnnounceClose;
+				goto ZR_Announce
+				Close;
 				end;
 				}
 				
