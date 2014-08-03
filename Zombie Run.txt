@@ -11,13 +11,14 @@
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ \\
 //
 // Written by Rythwin for Scythe RO (Made by Zairik)
-// Revision 2
+// Revision 3
 //
 // Notes:
 // Corrected the NPC check on eligibility. It was not looking for the correct values earlier.
 // Added SANDALS_ or Sandals [1] to the npc check, because this is the only item a level 1 novice can wear. They have to get rid of the item to participate. (Item ID: 2402)
 // Added a 1 second delay between the NPC announcing additional zombies and the zombies actually spawning.
 // Added even GMs below level 90 being warned that warping to the map can cause the event to get imbalanced, even in @hide.
+// Added the option of cancelling the Event in case of insufficient registrations.
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \\
 
 -	script	ZRCONTROLLEVEL	-1,{
@@ -40,7 +41,7 @@ prontera,155,178,5	script	Zombie Run	100,{
 			mes "Hello GM "+strcharinfo(0)+"!";
 			mes "What would you like to do today?";
 			next;
-			switch(select("Start Zombie Run:Close Registrations and Start:Cancel")){
+			switch(select("Start Zombie Run:Close Registrations and Start:Close:Close and Cancel the event")){
 			
 		case 1:
 		{
@@ -127,6 +128,42 @@ prontera,155,178,5	script	Zombie Run	100,{
 			close2;
 			end;
 		}
+		
+		case 4:
+		{
+			if($zombierun_onff == 0 && $zombierun_status == 0){
+			mes "^2099FF[~Zombie Run Event~]^000000";
+			mes "Sorry! But I cant cancel an event that is not running!";
+			close;
+			end;
+			}
+			else if ($zombierun_onoff == 1 || $zombierun_status == 1{
+			mes "^2099FF[~Zombie Run Event~]^000000";
+			mes "ARE YOU SURE YOU WANT TO CANCEL THE EVENT?";
+			next;
+			mes "^2099FF[~Zombie Run Event~]^000000";
+			mes "If the event is running, players will be warped out and the event cancelled";
+			next;
+			mes "^2099FF[~Zombie Run Event~]^000000";
+			mes "Please make a decision.";
+			next;
+			if(select("Yes: Cancel the Event:No") == 2)
+				{
+				mes "^2099FF[~Zombie Run Event~]^000000";
+				mes "Okay.";
+				}
+			else
+				{
+				mes "^2099FF[~Zombie Run Event~]^000000";
+				mes "Okay the event shall be closed now, and all participants/registered players warped out";
+				close2;
+				mapwarp "pvp_n_2-5","scythero",100,100;
+				set $zombierun_status,0;
+				set $zombierun_onoff,0;
+				announce "Zombie Run Event: Sorry guys. The event has been cancelled off by GM "+strcharinfo(0)"!",0;
+				end;
+				}
+			}
 		}
 	}
 		
