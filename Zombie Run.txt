@@ -331,7 +331,6 @@ prontera,155,178,5	script	Zombie Run	100,{
 		mapannounce "pvp_n_2-5","Zombie Run Event: Go go go! Run for your survival!",0;
 		monster "pvp_n_2-5",0,0,"Novice Killer",1036,10,"";
 		set $zrtime,0;
-		enablenpc "Zombie_Spawner";
 		goto ZR_timer;
 		end;
 		
@@ -357,7 +356,6 @@ prontera,155,178,5	script	Zombie Run	100,{
 		
 		ZR_Winner:
 		mapannounce "pvp_n_2-5","Zombie Run Event: Congratulations! You have won the event!",0;
-		disablenpc "Zombie_Spawner";
 		killmonsterall "pvp_n_2-5";
 		sleep2 2000;
 		mapannounce "pvp_n_2-5","Please talk to the Prize NPC in the middle of the room for your reward!",0;
@@ -372,7 +370,6 @@ prontera,155,178,5	script	Zombie Run	100,{
 		set $zombierun_status,0;
 		killmonsterall "pvp_n_2-5";
 		set $zrtime,0;
-		disablenpc "Zombie_Spawner";
 		end;
 		
 		
