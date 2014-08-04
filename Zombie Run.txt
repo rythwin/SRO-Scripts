@@ -11,7 +11,7 @@
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ \\
 //
 // Written by Rythwin for Scythe RO (Made by Zairik)
-// Revision 4
+// Revision 5
 //
 // Notes:
 // Corrected the NPC check on eligibility. It was not looking for the correct values earlier.
@@ -21,6 +21,7 @@
 // Added the option of cancelling the Event in case of insufficient registrations.
 // Fixed the problems in revision 3 with cancelling the registrations
 // Changed the formatting and text options in the GM menu
+// Set the minimum number of players to 2. A GM below level 90 can not start the event with just one player in the map. 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \\
 
 -	script	ZRCONTROLLEVEL	-1,{
@@ -89,11 +90,20 @@ prontera,155,178,5	script	Zombie Run	100,{
 // 	Consider disabling this, as a GM inside the map can bug the event. The GM will get counted as a person inside the map. For security sake, I've set this so that only a level 90 GM (Or Higher) can use this option
 
 				else if (getgmlevel () < 90){
-				mes "^2099FF[~Zombie Run Control Node~]^000000";
-				mes "The event will be started now";
-				goto ZR_Announce
-				Close;
-				end;
+//  Change this below value to the minimum number of players a gm can start the game with.				
+					if (getmapusers ("pvp_n_2-5") < 2){
+					mes "^2099FF[~Zombie Run Control Node~]^000000";
+					mes "I'm sorry. You need at least two players to start this event.";
+					close;
+					end;
+					}
+					else{
+					mes "^2099FF[~Zombie Run Control Node~]^000000";
+					mes "The event will be started now";
+					goto ZR_AnnounceClose;
+					Close;
+					end;
+					}
 				}
 				
 				else if (getgmlevel() >= 90){
@@ -267,6 +277,7 @@ prontera,155,178,5	script	Zombie Run	100,{
 		
 		set $zombierun_onoff,1;
 		killmonsterall "pvp_n_2-5";
+		mapwarp "pvp_n_2-5","scythero",150,150;
 		announce "Zombie Run Event: A Game Master has started the Zombie Run event!",0;
 		sleep2 5000;
 		announce "Zombie Run Event: To play, @go 0 and talk to the NPC",0;
@@ -276,9 +287,11 @@ prontera,155,178,5	script	Zombie Run	100,{
 		
 		ZR_AnnounceClose:
 		
-		announce "Zombie Run: Regsitrations for Zombie Run has been closed by a GM and the Event will being Shortly!",0;
+		announce "Zombie Run: Registrations for Zombie Run has been closed by a GM and the Event will being Shortly!",0;
 		set $zombierun_status,1;
 		set $zombierun_onoff,0;
+		sleep2 1000;
+		announce "Zombie Run: There are "+getmapusers("pvp_n_2-5")+" people trying to survive!",0;
 		goto ZR_Init;
 		end;
 		
