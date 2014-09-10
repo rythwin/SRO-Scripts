@@ -1,0 +1,245 @@
+//===== rAthena Script =======================================
+//= Jumper Jack a.k.a. Hide and Seek Event
+//===== By: ==================================================
+//= Rythwin
+//===== Current Version: =====================================
+//= 1.0
+//===== Compatible With: =====================================
+//= rAthena
+//===== Description: =========================================
+//= Players have to find the NPC.
+//= NPC is placed in one of 10 random maps with random coordinates
+//= NPC is further disguised as a random monster
+//===== Revisions ============================================
+//= 1.0 Added a 5 minute warning into each round.
+//===== Script Notes: ========================================
+//= Designed for ScytheRO (Private RO Server - By Zairik)
+//= Maplist based off suggestions got in game.
+//= Change OnTime clock to edit start times of event (for automated running)
+//============================================================
+
+
+-	script	JumperEvent	-1,{
+
+OnInit:
+	set .jumprounds,3;
+	set .jumpr,.jumprounds;
+	set $@jumpreward,909;
+	set $@jrnumber,1;
+	set $jumperstatus,0;
+	disablenpc "Jumper Jack1";
+	disablenpc "Jumper Jack2";
+	disablenpc "Jumper Jack3";
+	disablenpc "Jumper Jack4";
+	disablenpc "Jumper Jack5";
+	disablenpc "Jumper Jack6";
+	disablenpc "Jumper Jack7";
+	disablenpc "Jumper Jack8";
+	disablenpc "Jumper Jack9";
+	disablenpc "Jumper Jack10";
+	end;
+
+OnWhisperGlobal:
+	if (getgmlevel() < 90) end;
+	if (.jumperrunning == 1 || agitcheck() == 1 || agitcheck2() == 1){
+	mes "Jumper Jack Control:";
+	mes "I'm sorry, please try again when the event is not running and/or WoE is not in progress";
+	close;
+	end;
+	}
+	
+L_JumperJackAdmin:
+	mes "[Jumper Jack Control]";
+	mes "Number of Rounds: "+.jumprounds+"";
+	mes "Event Prize & Amount: "+$@jumpreward+" : "+$@jrnumber+"";
+	switch(select("Set Rounds:Set Prize:Force Start:Close")){	
+	Case 1:
+		switch(select("Change Number of Rounds:Cancel")){
+		
+		Case 1:
+			mes "-------------------";
+			mes "Enter the desired number of rounds";
+			input .jumprounds;
+			close2;
+			set .jumpr,.jumprounds;
+			goto L_JumperJackAdmin;		
+		Case 2:
+			close2;
+			goto L_JumperJackAdmin;
+			}		
+	Case 2:
+		switch(select("Input Prize:Input Number of prizes:Cancel")){
+			Case 1:
+				mes "-------------------";
+				mes "Input VALID ItemID for prize";
+				input $@JumpReward;
+				close2;
+				goto L_JumperJackAdmin;		
+			Case 2:
+				mes "-------------------";
+				mes "Input amount of prizes to be given";
+				input $@jrnumber;
+				close2;
+				goto L_JumperJackAdmin;			
+			Case 3:
+				close2;
+				goto L_JumperJackAdmin;
+				}			
+	Case 3:
+		switch(select("Confirm Force Start:Cancel")){
+		Case 1:
+			close2;
+			goto OnStart;
+		
+		Case 2:
+			close2;
+			goto L_JumperJackAdmin;
+			}	
+	Case 4:
+		end;
+	}
+	
+//OnClock1155:
+//	announce "Jumper Jack: The Jumper Jack event will start in 5 minutes!",0;
+//	sleep 240000;
+//	announce "Jumper Jack: The Jumper Jack event will start in 1 minute!",0;
+//	sleep 60000;
+//	goto OnStart;
+	
+//OnClock2355:
+//	announce "Jumper Jack: The Jumper Jack event will start in 5 minutes!",0;
+//	sleep 240000;
+//	announce "Jumper Jack: The Jumper Jack event will start in 1 minute!",0;
+//	sleep 60000;
+//	goto OnStart;
+	
+OnStart:
+	if ( agitcheck() == 1 || agitcheck2() == 1 ) {
+		set .jumpr,.jumprounds;
+		set $jumperstatus,0;
+		set .roundnumber,0;
+		disablenpc "Jumper Jack"+.mapno+"";
+		set .jumperrunning,0;
+		sleep 10000;
+		announce "Jumper Jack: Event has been cancelled because WoE is going on!",0;
+		end;
+		}
+	set $monster, rand(1001,2082);
+		if ($monster == 1003 || $monster == 1006 || $monster == 1017 || $monster == 1021 || $monster == 1022 || $monster == 1027 || $monster == 1043 || $monster == 1075 || $monster == 1136 || $monster == 1137 || $monster == 1168 || $monster == 1171 || $monster == 1172 || $monster == 1173 || $monster == 1181 || $monster == 1210 || $monster == 1222 || $monster == 1223 || $monster == 1224 || $monster == 1225 || $monster == 1226 || $monster == 1227 || $monster == 1228 || $monster == 1233 || $monster == 1284 || $monster == 1407 || $monster == 1411 || $monster == 1414 || $monster == 1496 || $monster == 1501 || $monster == 1900 || $monster == 1996 || $monster == 2000 || $monster == 2001 || $monster == 2002 || $monster == 2003 || $monster == 2004 || $monster == 2005 || $monster == 2006 || $monster == 2007 || $monster == 2011 || $monster == 2012 || $monster == 2025 || $monster == 2028 || $monster == 2029 || $monster == 2032 || $monster == 2033 || $monster == 2034 || $monster == 2035 || $monster == 2036 || $monster == 2037 || $monster == 2038 || $monster == 2039 || $monster == 2040 || $monster == 2041 || $monster == 2048 || $monster == 2050 || $monster == 2051 || $monster == 2052 || $monster == 2053 || $monster == 2054 || $monster == 2055 || $monster == 2056 || $monster == 2058 || $monster == 2059 || $monster == 2060 || $monster == 2061 || $monster == 2062 || $monster == 2063 || $monster == 2064 || $monster == 2065 || $monster == 2066 || $monster == 2067 || $monster == 2075 || $monster == 2079 || $monster == 2080){
+		goto OnStart2; 
+		}
+	set .jumperrunning,1;
+	if (.jumpr == .jumprounds){
+		announce "Jumper Jack: Event is starting now!",0;
+		sleep 1000;
+		announce "Total Number of rounds are: ~~~ "+.jumprounds+" ~~~!",0;
+		sleep 2000;
+		}
+	if (.jumpr == 0){
+		stopnpctimer;
+		announce "Jumper Jack: The event is now over!",0;
+		set .jumpr,.jumprounds;
+		set $jumperstatus,0;
+		set .roundnumber,0;
+		disablenpc "Jumper Jack"+.mapno+"";
+		set .jumperrunning,0;
+		sleep 2000;
+		announce "Jumper Jack: Better luck next time to everyone!",0;
+		end;
+		}
+	stopnpctimer;
+	disablenpc "Jumper Jack"+.mapno+"";
+	set .roundnumber,.roundnumber+1;
+	set .mapno, rand(1,10);
+	if (.mapno == 1) set .jmpmap$,"morocc";
+	if (.mapno == 2) set .jmpmap$,"gef_fild10";
+	if (.mapno == 3) set .jmpmap$,"yuno";
+	if (.mapno == 4) set .jmpmap$,"hugel";
+	if (.mapno == 5) set .jmpmap$,"niflheim";
+	if (.mapno == 6) set .jmpmap$,"lighthalzen";
+	if (.mapno == 7) set .jmpmap$,"prt_maze03";
+	if (.mapno == 8) set .jmpmap$,"brasilis";
+	if (.mapno == 9) set .jmpmap$,"malaya";
+	if (.mapno == 10) set .jmpmap$,"amatsu";
+	sleep 1000;
+	announce "Jumper Jack: Round Number: "+.roundnumber+" !",0;
+	sleep 2000;
+	announce "Jumper Jack: I'm now in "+.jmpmap$+"!",0;
+	goto OnStart2;
+	
+OnStart2:
+	while(1) { 
+	set $@ex,rand(0,300);
+	set $@ey,rand(0,300);
+	if(checkcell(""+.jmpmap$+"",$@ex,$@ey,cell_chkpass))
+	break;
+	}
+	initnpctimer;
+	set $jumperfound,0;
+	set $jumperstatus,1;
+	enablenpc "Jumper Jack"+.mapno+"";
+	movenpc "Jumper Jack"+.mapno+"",$@ex,$@ey;
+//Below line gives the coords to online GMs. For testing purposes only
+	atcommand "@request "+$@ex+" "+$@ey+"";
+	atcommand "@request disguised as "+$monster+"";
+//End of testing line
+	setnpcdisplay "Jumper Jack"+.mapno+"","Jumper Jack",$monster;
+	set .jumpr,.jumpr-1;
+	sleep 2000;
+	announce "Jumper Jack: You have 10 minutes to find me by warping around the map! Note: I'm also disguised~",0;
+	end;
+	
+	onTimer300000:
+		if ($jumperfound == 1) end;
+		announce "Jumper Jack: Only 5 minutes left to find me!",0;
+		sleep 1000;
+		announce "Jumper Jack: Reminder~ I'm in "+.jmpmap$+"!",0;
+		end;
+		
+	onTimer600000:	
+		if ($jumperfound == 1) end;
+		set $jumperstatus,0;
+		announce "Jumper Jack: Wow! No one found me @ "+.jmpmap$+" "+$@ex+" "+$@ey+" !!",0;
+		sleep2 2000;
+		announce "Jumper Jack: Please wait 15 seconds for the next round",bc_blue;
+		sleep 15000;
+		donpcevent "JumperEvent::OnStart";
+		end;
+		}
+	
+-	script	Jumper Jack	-1,{
+	if ($jumperstatus == 0){
+		mes "[Jumper Jack]";
+		mes "I'm sorry, the round is over!";
+		next;
+		mes "[Jumper Jack]";
+		mes "Please wait for the next round";
+		close;
+		end;
+		}	
+	set $jumperstatus,0;
+	set $jumperfound,1;
+	announce "Jumper Jack: "+strcharinfo(0)+" found me!!",0;
+	announce "Jumper Jack: I was at "+$@ex+" "+$@ey+" !!",0;
+	getitem $@jumpreward,$@jrnumber;
+	sleep 2000;
+	announce "Jumper Jack: Please wait 10 seconds for the next round",bc_blue;
+	sleep 10000;
+	donpcevent "JumperEvent::OnStart";
+	end;
+}
+
+// First duplicate in prontera is to avoid mapserver giving an error on the first run
+// Happens because of the initial disablenpc happening OnStart
+
+prontera,1,1,1	duplicate(Jumper Jack)	Jumper Jack0	100
+morocc,292,120,1	duplicate(Jumper Jack)	Jumper Jack1	100
+gef_fild10,323,145,1	duplicate(Jumper Jack)	Jumper Jack2	100
+yuno,32,269,1	duplicate(Jumper Jack)	Jumper Jack3	100
+hugel,209,108,1	duplicate(Jumper Jack)	Jumper Jack4	100
+niflheim,293,278,1	duplicate(Jumper Jack)	Jumper Jack5	100
+lighthalzen,176,173,1	duplicate(Jumper Jack)	Jumper Jack6	100
+prt_maze03,136,184,1	duplicate(Jumper Jack)	Jumper Jack7	100
+brasilis,220,233,1	duplicate(Jumper Jack)	Jumper Jack8	100
+malaya,173,93,1	duplicate(Jumper Jack)	Jumper Jack9	100
+amatsu,163,221,1	duplicate(Jumper Jack)	Jumper Jack10	100
