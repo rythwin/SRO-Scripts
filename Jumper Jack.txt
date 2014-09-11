@@ -12,6 +12,7 @@
 //= NPC is further disguised as a random monster
 //===== Revisions ============================================
 //= 1.0 Added a 5 minute warning into each round.
+//= 1.1 Changed $monster to .jmonster (unncessary global variable)
 //===== Script Notes: ========================================
 //= Designed for ScytheRO (Private RO Server - By Zairik)
 //= Maplist based off suggestions got in game.
@@ -124,8 +125,8 @@ OnStart:
 		announce "Jumper Jack: Event has been cancelled because WoE is going on!",0;
 		end;
 		}
-	set $monster, rand(1001,2082);
-		if ($monster == 1003 || $monster == 1006 || $monster == 1017 || $monster == 1021 || $monster == 1022 || $monster == 1027 || $monster == 1043 || $monster == 1075 || $monster == 1136 || $monster == 1137 || $monster == 1168 || $monster == 1171 || $monster == 1172 || $monster == 1173 || $monster == 1181 || $monster == 1210 || $monster == 1222 || $monster == 1223 || $monster == 1224 || $monster == 1225 || $monster == 1226 || $monster == 1227 || $monster == 1228 || $monster == 1233 || $monster == 1284 || $monster == 1407 || $monster == 1411 || $monster == 1414 || $monster == 1496 || $monster == 1501 || $monster == 1900 || $monster == 1996 || $monster == 2000 || $monster == 2001 || $monster == 2002 || $monster == 2003 || $monster == 2004 || $monster == 2005 || $monster == 2006 || $monster == 2007 || $monster == 2011 || $monster == 2012 || $monster == 2025 || $monster == 2028 || $monster == 2029 || $monster == 2032 || $monster == 2033 || $monster == 2034 || $monster == 2035 || $monster == 2036 || $monster == 2037 || $monster == 2038 || $monster == 2039 || $monster == 2040 || $monster == 2041 || $monster == 2048 || $monster == 2050 || $monster == 2051 || $monster == 2052 || $monster == 2053 || $monster == 2054 || $monster == 2055 || $monster == 2056 || $monster == 2058 || $monster == 2059 || $monster == 2060 || $monster == 2061 || $monster == 2062 || $monster == 2063 || $monster == 2064 || $monster == 2065 || $monster == 2066 || $monster == 2067 || $monster == 2075 || $monster == 2079 || $monster == 2080){
+	set .jmonster, rand(1001,2082);
+		if (.jmonster == 1003 || .jmonster == 1006 || .jmonster == 1017 || .jmonster == 1021 || .jmonster == 1022 || .jmonster == 1027 || .jmonster == 1043 || .jmonster == 1075 || .jmonster == 1136 || .jmonster == 1137 || .jmonster == 1168 || .jmonster == 1171 || .jmonster == 1172 || .jmonster == 1173 || .jmonster == 1181 || .jmonster == 1210 || .jmonster == 1222 || .jmonster == 1223 || .jmonster == 1224 || .jmonster == 1225 || .jmonster == 1226 || .jmonster == 1227 || .jmonster == 1228 || .jmonster == 1233 || .jmonster == 1284 || .jmonster == 1407 || .jmonster == 1411 || .jmonster == 1414 || .jmonster == 1496 || .jmonster == 1501 || .jmonster == 1900 || .jmonster == 1996 || .jmonster == 2000 || .jmonster == 2001 || .jmonster == 2002 || .jmonster == 2003 || .jmonster == 2004 || .jmonster == 2005 || .jmonster == 2006 || .jmonster == 2007 || .jmonster == 2011 || .jmonster == 2012 || .jmonster == 2025 || .jmonster == 2028 || .jmonster == 2029 || .jmonster == 2032 || .jmonster == 2033 || .jmonster == 2034 || .jmonster == 2035 || .jmonster == 2036 || .jmonster == 2037 || .jmonster == 2038 || .jmonster == 2039 || .jmonster == 2040 || .jmonster == 2041 || .jmonster == 2048 || .jmonster == 2050 || .jmonster == 2051 || .jmonster == 2052 || .jmonster == 2053 || .jmonster == 2054 || .jmonster == 2055 || .jmonster == 2056 || .jmonster == 2058 || .jmonster == 2059 || .jmonster == 2060 || .jmonster == 2061 || .jmonster == 2062 || .jmonster == 2063 || .jmonster == 2064 || .jmonster == 2065 || .jmonster == 2066 || .jmonster == 2067 || .jmonster == 2075 || .jmonster == 2079 || .jmonster == 2080){
 		goto OnStart2; 
 		}
 	set .jumperrunning,1;
@@ -181,9 +182,9 @@ OnStart2:
 	movenpc "Jumper Jack"+.mapno+"",$@ex,$@ey;
 //Below line gives the coords to online GMs. For testing purposes only
 	atcommand "@request "+$@ex+" "+$@ey+"";
-	atcommand "@request disguised as "+$monster+"";
+	atcommand "@request disguised as "+.jmonster+"";
 //End of testing line
-	setnpcdisplay "Jumper Jack"+.mapno+"","Jumper Jack",$monster;
+	setnpcdisplay "Jumper Jack"+.mapno+"","Jumper Jack",.jmonster;
 	set .jumpr,.jumpr-1;
 	sleep 2000;
 	announce "Jumper Jack: You have 10 minutes to find me by warping around the map! Note: I'm also disguised~",0;
@@ -199,6 +200,7 @@ OnStart2:
 	onTimer600000:	
 		if ($jumperfound == 1) end;
 		set $jumperstatus,0;
+		announce "Jumper Jack: Wow! No one found me @ "+.jmpmap$+" "+$@ex+" "+$@ey+" !!",0;
 		announce "Jumper Jack: Wow! No one found me @ "+.jmpmap$+" "+$@ex+" "+$@ey+" !!",0;
 		sleep2 2000;
 		announce "Jumper Jack: Please wait 15 seconds for the next round",bc_blue;
